@@ -1,0 +1,44 @@
+from flask import request
+from flask_restx import Resource, Namespace
+from dao.models.movie import MovieSchema
+from implemented import movie_service
+
+movie_ns = Namespace('movies')
+
+movie_schema = MovieSchema()
+movies_schema = MovieSchema(many=True)
+
+
+@movie_ns.route('/')
+class MoviesView(Resource):
+    def get(self):
+        data_dir = request.args.get('director_id', False)
+        data_gen = request.args.get('genre_id', False)
+        movies = movie_service.get_all(data_gen, data_dir)
+        return movies_schema.dump(movies.all()), 200
+
+    def post(self):
+        data = request.json
+        movie_service.create(data)
+        return "", 201
+
+
+@movie_ns.route('/<int:m_id>')
+class MovieView(Resource):
+    def get(self, m_id):
+        movie = movie_service.get_one(m_id)
+        return movie_schema.dump(movie), 200
+
+    def put(self, m_id):
+        data = request.json
+        movie_service.update(data, m_id)
+        return "", 204
+
+    def patch(self, m_id):
+        data = request.json
+        movie_service.update_partial(data, m_id)
+        return "", 204
+
+    def delete(self, m_id):
+        movie_service.delete(m_id)
+        return "", 204
