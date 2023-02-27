@@ -14,8 +14,9 @@ class MoviesView(Resource):
     def get(self):
         data_dir = request.args.get('director_id', False)
         data_gen = request.args.get('genre_id', False)
-        movies = movie_service.get_all(data_gen, data_dir)
-        return movies_schema.dump(movies.all()), 200
+        data_year = request.args.get('year', False)
+        movies = movie_service.get_all(data_gen, data_dir, data_year)
+        return movies_schema.dump(movies), 200
 
     def post(self):
         data = request.json

@@ -9,7 +9,7 @@ class MovieService:
     def get_one(self, m_id):
         return self.dao.get_one(m_id)
 
-    def get_all(self, data_gen, data_dir):
+    def get_all(self, data_gen, data_dir, data_year):
         movies = Movie.query
         if data_dir and data_gen:
             movies = movies.filter(Movie.director_id == data_dir, Movie.genre_id == data_gen)
@@ -17,7 +17,9 @@ class MovieService:
             movies = movies.filter(Movie.director_id == data_dir)
         elif data_gen:
             movies = movies.filter(Movie.genre_id == data_gen)
-        return movies
+        elif data_year:
+            movies = movies.filter(Movie.year == data_year)
+        return self.dao.get_all(movies)
 
     def create(self, data):
         return self.dao.create(data)
